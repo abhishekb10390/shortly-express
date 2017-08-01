@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', 
 (req, res) => {
-  res.render('index');
+  res.render('login');
 });
 
 app.get('/create', 
@@ -77,8 +77,55 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/signup', 
+(req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  console.log('username is ' + username, 'password is ' + password); 
+    
+  models.Users.getAll({username: username}).then(function(userExists) {
+    if (userExists.length === 0) {
+      models.Users.create({username, password});
+      res.redirect('/'); 
+      res.send();
+    } else {
+      res.redirect('/signup');
+    }
+  }).catch(function(err) {
+    throw err;
+  });
+});
 
+  //   console.log('*************this is the result!: ', userExists);
+  //   console.log('return from promise ' + userExists[0].username);
+  //   //console.log('hello!!!!!');
+  //   res.redirect('/signup');
+  // }).catch(function(err) {
+  //   //console.log('CREATING USER');
+  //   models.Users.create({username, password});
+  //   res.redirect('/'); 
+  //   res.send();
+  //   //next();
+  // });
+// });
 
+app.post('/login', (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  models.Users.getAll({username: username}).then(function(userExists) {
+    if (userExists.length === 0) {
+      res.redirect('/login'); 
+      res.send();
+    } else {
+      if (models.Users.compare(password, userExists[0].password, userExists[0].salt)) {
+        res.redirect('/');
+      } else {
+        res.redirect('/login');
+      }
+      
+    }
+  });
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail

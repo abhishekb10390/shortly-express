@@ -1,4 +1,4 @@
-const utils = require('../lib/hashUtils');
+const utils = require('../lib/hashUtils.js');
 const Model = require('./model');
 
 /**
@@ -40,9 +40,19 @@ class Users extends Model {
       salt,
       password: utils.createHash(password, salt)
     };
-
+    //console.log('trying to create a user: ', newUser);
     return super.create.call(this, newUser);
   }
+  
+  // isExistingUser(username) {
+  //   var userInfo = Model.getAll({username: username});
+  //   if (userInfo[0] !== undefined) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   } 
+  // }
+  
 }
 
 module.exports = new Users();

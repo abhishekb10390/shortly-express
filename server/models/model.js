@@ -2,6 +2,7 @@ const db = require('../db');
 const _ = require('lodash');
 
 const executeQuery = (query, values) => {
+  console.log('query values: ', values);
   return db.queryAsync(query, values).spread(results => results);
 };
 
@@ -67,6 +68,7 @@ class Model {
    */
   create(options) {
     let queryString = `INSERT INTO ${this.tablename} SET ?`;
+    //console.log('this is the string!: ', queryString);
     return executeQuery(queryString, options);
   }
 

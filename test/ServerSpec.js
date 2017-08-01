@@ -1,3 +1,4 @@
+
 var expect = require('chai').expect;
 var mysql = require('mysql');
 var request = require('request');
@@ -13,7 +14,9 @@ var port = 4568;
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var xbeforeEach = function() {};
+var xbeforeEach = function() {
+  // callback();  
+};
 /************************************************************/
 
 
@@ -64,6 +67,7 @@ describe('', function() {
   describe('Database Schema:', function() {
     it('contains a users table', function(done) {
       var queryString = 'SELECT * FROM users';
+      debugger;
       db.query(queryString, function(err, results) {
         if (err) { return done(err); }
 
@@ -123,7 +127,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Account Creation:', function() {
+  describe('Account Creation:', function() {
 
     it('signup creates a new user record', function(done) {
       var options = {
@@ -136,10 +140,15 @@ describe('', function() {
       };
 
       request(options, function(error, res, body) {
+        
         var queryString = 'SELECT * FROM users where username = "Samantha"';
+        // console.log('query string is ' + queryString);
+        // console.log('body is ' + body, 'res is ' + res);
         db.query(queryString, function(err, rows) {
+
           if (err) { done(err); }
           var user = rows[0];
+          //console.log(user);
           expect(user).to.exist;
           expect(user.username).to.equal('Samantha');
           done();
@@ -208,7 +217,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Account Login:', function() {
+  describe('Account Login:', function() {
 
     beforeEach(function(done) {
       var options = {
@@ -277,7 +286,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Sessions Schema:', function() {
+  describe('Sessions Schema:', function() {
     it('contains a sessions table', function(done) {
       var queryString = 'SELECT * FROM sessions';
       db.query(queryString, function(err, results) {
@@ -325,7 +334,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Express Middleware', function() {
+  describe('Express Middleware', function() {
     var cookieParser = require('../server/middleware/cookieParser.js');
     var createSession = require('../server/middleware/auth.js').createSession;
 
@@ -607,7 +616,7 @@ describe('', function() {
       }
     };
 
-    xbeforeEach(function(done) {
+    beforeEach(function(done) {
       var options = {
         'method': 'POST',
         'followAllRedirects': true,
