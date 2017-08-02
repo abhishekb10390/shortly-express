@@ -400,7 +400,7 @@ describe('', function() {
 
         createSession(requestWithoutCookie, response, function() {
           var cookies = response.cookies;
-          expect(cookies['shortlyid']).to.exist;
+          expect(cookies['shortlyid']).to.exist;  
           expect(cookies['shortlyid'].value).to.exist;
           done();
         });
@@ -489,7 +489,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Sessions and cookies', function() {
+  describe('Sessions and cookies', function() {
     var requestWithSession;
     var cookieJar;
 

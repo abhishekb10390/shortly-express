@@ -14,12 +14,16 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-
-
+app.use(require('./middleware/cookieParser'));
+app.use(Auth.createSession);
 
 app.get('/', 
 (req, res) => {
   res.render('login');
+});
+
+app.get('/signup', function(req, res, next) {
+  res.render('signup');
 });
 
 app.get('/create', 
@@ -77,24 +81,59 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+
+
 app.post('/signup', 
 (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
-  console.log('username is ' + username, 'password is ' + password); 
+console.log("**************** hi  tiff" + req.session);
+  //console.log('username is ' + username, 'password is ' + password); 
     
-  models.Users.getAll({username: username}).then(function(userExists) {
-    if (userExists.length === 0) {
-      models.Users.create({username, password});
-      res.redirect('/'); 
-      res.send();
-    } else {
-      res.redirect('/signup');
+  return models.Users.get({username: username}).then(function(userExists) {
+    if (userExists) {
+      throw userExists;
     }
-  }).catch(function(err) {
-    throw err;
+    return models.Users.create({username, password}).then(function(user) {
+      models.Sessions.update({hash: req.session.hash, userId: user.insertId});  
+    
+    }).then(function() {
+      res.redirect('/');
+    });
+    
+  }).error(error = function() {
+      console.log('hiiiii')
+    res.status(500).send(error);
+  }).catch(function() {
+    console.log('oops please choose diff username')
+    res.redirect('/signup');
   });
 });
+
+
+// app.post('/signup', 
+// (req, res, next) => {
+//   var username = req.body.username;
+//   var password = req.body.password;
+//   //console.log('username is ' + username, 'password is ' + password); 
+    
+//   models.Users.getAll({username: username}).then(function(userExists) {
+//     if (userExists.length === 0) {
+//      return models.Users.create({username, password}).then(function(resultOfRecordCreation) {
+        
+//         Auth.createSession(req, res, function() {
+//           console.log('hello there the angel from my nightmare')
+//           res.redirect('/'); 
+//           res.send();
+//         });
+//       })
+      
+//     } else {
+//       res.redirect('/signup');
+//     }
+//   }).catch(function(err) {
+//     throw err;
+//   });
 
   //   console.log('*************this is the result!: ', userExists);
   //   console.log('return from promise ' + userExists[0].username);
